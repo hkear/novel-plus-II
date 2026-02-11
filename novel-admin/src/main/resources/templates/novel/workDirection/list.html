@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>作品方向管理</h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-primary btn-xs" th:href="@{/system/workDirection/add}">新增</a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <input type="text" placeholder="方向名称" class="form-control" id="name">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" onclick="reLoad()">搜索</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-striped table-bordered table-hover" id="exampleTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script type="text/javascript">
+    var prefix = "/system/workDirection";
+    $(function() {
+        load();
+    });
+    function load() {
+        $('#exampleTable').bootstrapTable({
+            url: prefix + "/list",
+            queryParams: function(params) {
+                return {
+                    limit: params.limit,
+                    offset: params.offset,
+                    name: $('#name').val()
+                };
+            },
+            columns: [
+                {checkbox: true},
+                {title: '序号', formatter: function(value, row, index) {return index+1;}},
+                {field: 'name', title: '方向名称'},
+                {field: 'code', title: '方向编码'},
+                {field: 'sort', title: '排序'},
+                {field: 'status', title: '状态', formatter: function(value) {return value == 0 ? '启用' : '禁用';}},
+                {title: '操作', formatter: function(value, row, index) {
+                    var html = '<a class="btn btn-primary btn-xs" href="edit/'+row.id+'">编辑</a> ';
+                    html += '<a class="btn btn-danger btn-xs" onclick="del(\''+row.id+'\')">删除</a>';
+                    return html;
+                }}
+            ]
+        });
+    }
+    function reLoad() {$('#exampleTable').bootstrapTable('refresh');}
+    function del(id) {
+        layer.confirm('确定删除该方向？', function(index) {
+            $.post(prefix + "/remove", {id: id}, function(r) {
+                if(r.code === 0) {layer.msg(r.msg); reLoad();}
+                else {layer.msg(r.msg);}
+            });
+            layer.close(index);
+        });
+    }
+</script>
+</body>
+</html>

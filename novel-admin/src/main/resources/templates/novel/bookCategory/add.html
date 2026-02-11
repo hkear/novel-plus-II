@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>新增小说分类</h5>
+                </div>
+                <div class="ibox-content">
+                    <form id="form" method="post" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">分类名称：</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">作品方向：</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="directionId" required>
+                                    <option value="">请选择</option>
+                                    <option th:each="dir : ${directionList}" th:value="${dir.id}" th:text="${dir.name}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">排序：</label>
+                            <div class="col-sm-10">
+                                <input type="number" class="form-control" name="sort" value="10" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">自定义CSS：</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" name="customCss" rows="3" placeholder="如：color:red;font-size:14px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">提交</button>
+                                <button class="btn btn-white" type="button" onclick="history.back()">返回</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script>
+    $(function() {
+        $('#form').validate({
+            submitHandler: function(form) {
+                $.ajax({
+                    type: "POST",
+                    url: "/novel/bookCategory/add",
+                    data: JSON.stringify($(form).serializeObject()),
+                    contentType: "application/json",
+                    success: function(r) {
+                        if(r.code === 0) {
+                            parent.layer.msg("新增成功");
+                            parent.location.reload();
+                        } else {parent.layer.msg(r.msg);}
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
